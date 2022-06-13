@@ -1,33 +1,24 @@
-num = int(input("\n\nPick an integer: "))
-iteration = 0
+import pygame
+pygame.init()
 
-show_the_math = input("(y) Show calculations? ")
-if show_the_math == "y":
-    show_the_math = True
-else:
-    show_the_math = False
+bColor = (44, 47, 51)
+screen = pygame.display.set_mode((800, 1000))
 
-print("")
+font1 = pygame.font.SysFont('Arial', 24)
+font2 = pygame.font.SysFont('Arial', 10)
 
-# Algorithm
-while not num == 1:
+titleText = font1.render('Welcome to the Collatz Conjecture visualizer, input the starting number:', False, (255, 255, 255))
 
-    iteration += 1
+pygame.display.set_caption('Collatz Conjecture')
+screen.fill(bColor)
 
-    if num % 2 == 0:
+pygame.display.flip()
+while True:
+    screen.blit(titleText, (30, 42))
 
-        if show_the_math:
-            print(str(int(num)) + " is even, diving by two: " + str(int(num/2)))
-
-        num /= 2
-
-    else:
-
-        if show_the_math:
-            print(str(int(num)) + " is odd, multiplying by three and adding one: " + str(int((3 * num) + 1)))
-
-        num = (3 * num) + 1
-
-
-# Output
-print("\n" + str(iteration) + " iterations before getting to 1 and establishing the loop")
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+            
+        pygame.display.update()
