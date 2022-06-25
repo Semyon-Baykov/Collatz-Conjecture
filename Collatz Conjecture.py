@@ -8,7 +8,9 @@ clock = pygame.time.Clock()
 
 # Fonts and colors
 bColor = (44, 47, 51)
-blColor = (114, 137, 218)
+blColor1 = (114, 137, 218)
+blColor2 = (114, 137, 218)
+blColor3 = (114, 137, 218)
 rColor = (230, 230, 230)
 gColor = (255, 255, 255)
 
@@ -24,8 +26,7 @@ else: sFont2 = pygame.font.SysFont('Arial', 24)
 # Vars used in game
 numT = 'Type a positive integer...'
 num = 1
-collided = False
-wrongNum1 = False
+col_inp = False
 
 
 # Screen
@@ -38,15 +39,16 @@ screen.fill(bColor)
 input_a = pygame.Rect((30, 30), (745, 40))
 mButton = pygame.Rect((675, 30), (100, 40))
 gRect = pygame.Rect((45, 80), (705, 705))
-opt1 = pygame.Rect((50, 720), (100, 40))
+opt1 = pygame.Rect((50, 795), (100, 40))
+opt2 = pygame.Rect((180, 795), (100, 40))
 
 
 # Functions
 # Check if the pressed button is a number
 def isNum(char):
-    for i in range(48, 57):
+    for i in range(47, 58):
         if char == i: return True
-    for i in range(1073741913, 1073741922):
+    for i in range(1073741913, 1073741923):
         if char == i: return True
     return False
 
@@ -54,15 +56,19 @@ def isNum(char):
 def startCalc(num):
     # List the conjecture
     numList = [num]
+    oddList = list()
+    evenList = list()
     c = 0
     while num != 1:
         c += 1
         if num % 2 == 0:
             num = int(num / 2)
             numList.append(num)
+            evenList.append(num)
         else:
             num = 3 * num + 1
             numList.append(num)
+            oddList.append(num)
     # Find stats
     primeList = list()
     for i in numList:
@@ -84,12 +90,16 @@ while True:
     pygame.draw.rect(screen, rColor, input_a)
     screen.blit((sFont2.render(numT, False, (0, 0, 0))), (35, 35))
     # Main Button
-    pygame.draw.rect(screen, blColor, mButton)
-    screen.blit((sFont2.render('Enter', False, (0, 0, 0))), (704, 35))
+    pygame.draw.rect(screen, blColor1, mButton)
+    screen.blit((sFont1.render('Enter', False, (0, 0, 0))), (700, 33))
     # Graph
     pygame.draw.rect(screen, gColor, gRect)
     # Option buttons
-    pygame.draw.rect(screen, blColor, opt1)
+    pygame.draw.rect(screen, blColor2, opt1)
+    screen.blit((sFont2.render('Prime #s', False, (0, 0, 0))), (60, 800))
+    pygame.draw.rect(screen, blColor3, opt2)
+    screen.blit((sFont2.render('Option 2', False, (0, 0, 0))), (190, 800))
+    screen.blit((sFont2.render('Drag over a portion of the graph to zoom in', False, (100, 100, 100))), (300, 800))
 
 
     for event in pygame.event.get():
@@ -101,32 +111,38 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Input
             if input_a.collidepoint(event.pos):
+                col_inp = True
                 rColor = (210, 210, 230)
-                numT = ''
-                collided = True
+                if numT == 'Type a positive integer...': numT = ''
             else:
+                col_inp = False
                 rColor = (230, 230, 230)
-                collided = False
-            # Button
+            # Enter button
             if mButton.collidepoint(event.pos):
-                blColor = (124, 137, 228)
+                blColor1 = (124, 137, 228)
                 if numT == 'Type a positive integer...' or numT == '':
                     numT = random.randint(1, sys.maxsize)
-                startCalc(numT)
+                startCalc(int(numT))
             else:
-                blColor = (114, 137, 218)
+                blColor1 = (114, 137, 218)
+            # Option 1
+            if opt1.collidepoint(event.pos):
+                blColor2 = (200, 97, 118)
+            else:
+                blColor2 = (124, 137, 228)
+            # Option 2
+            if opt2.collidepoint(event.pos):
+                blColor3 = (200, 97, 118)
+            else:
+                blColor3 = (114, 137, 218)
         # Type
         elif event.type == pygame.KEYDOWN:
-            if collided:
+            if col_inp:
                 if event.key == pygame.K_BACKSPACE:
                     numT = numT[:-1]
                 else:
                     if isNum(event.key):
                         numT += event.unicode
-
-        # Misc events
-        if wrongNum1: screen.blit((sFont2.render('< Please type an integer first!', False, (200, 0, 0))), (169, 135))
-        else: screen.blit((sFont2.render('', False, (200, 0, 0))), (169, 135))
 
         # Clock
         pygame.display.flip()
